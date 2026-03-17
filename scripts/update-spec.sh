@@ -2,10 +2,7 @@
 set -euo pipefail
 
 COMMIT="${1:?Usage: $0 <commit-sha>}"
-SPEC_FILE="${SPEC_FILE:-SPECS/qemu-kvm.spec}"
-AUTHOR_NAME="${AUTHOR_NAME:-CI Bot}"
-AUTHOR_EMAIL="${AUTHOR_EMAIL:-ci@nvidia.com}"
-COMMIT_LOG_FILE="${COMMIT_LOG_FILE:-.upstream-commits}"
+SPEC_FILE="${SPEC_FILE:-SPECS/libvirt.spec}"
 
 # ── 1. Pin the commit SHA in the spec ──────────────────────────────────────
 echo "==> Setting %%global commit to ${COMMIT}"

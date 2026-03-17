@@ -1,16 +1,16 @@
-name: Build QEMU RPM Packages
+name: Build libvirt RPM Packages
 
 on:
   pull_request:
     types: [opened, synchronize]
     branches:
-      - nvidia_stable-10.1
+      - nvidia_stable-11.9
 
 permissions:
   contents: write
 
 env:
-  UPSTREAM_REPO: https://github.com/NVIDIA/QEMU.git
+  UPSTREAM_REPO: https://github.com/NVIDIA/libvirt.git
 
 jobs:
   # ────────────────────────────────────────────────────────────────────────
@@ -25,8 +25,7 @@ jobs:
     steps:
       - name: Install prerequisites
         run: |
-          dnf install -y git rpm-build rpmdevtools xz findutils python3-pip
-          pip3 install meson
+          dnf install -y git rpm-build rpmdevtools xz findutils
 
       - name: Checkout packaging repo
         uses: actions/checkout@v4
@@ -73,8 +72,8 @@ jobs:
         run: |
           rpmdev-setuptree
           cp SOURCES/* ~/rpmbuild/SOURCES/
-          cp SPECS/qemu-kvm.spec ~/rpmbuild/SPECS/
-          rpmbuild -bs ~/rpmbuild/SPECS/qemu-kvm.spec \
+          cp SPECS/libvirt.spec ~/rpmbuild/SPECS/
+          rpmbuild -bs ~/rpmbuild/SPECS/libvirt.spec \
             --define "_topdir $HOME/rpmbuild"
 
       - name: Collect SRPM
@@ -101,7 +100,7 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add SPECS/qemu-kvm.spec
+          git add SPECS/libvirt.spec
           git commit -m "$MSG"
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
 
@@ -127,6 +126,16 @@ jobs:
         run: |
           dnf install -y dnf-plugins-core epel-release
           dnf config-manager --set-enabled crb
+
+          cat > /etc/yum.repos.d/qemu-nvidia.repo <<'REPO'
+          [qemu-nvidia]
+          name=QEMU NVIDIA Repo
+          baseurl=https://3d0c.github.io/qemu-rpms/
+          enabled=1
+          gpgcheck=0
+          REPO
+          sed -i 's/^[[:space:]]*//' /etc/yum.repos.d/qemu-nvidia.repo
+
           dnf install -y rpm-build
 
       - name: Download SRPM
@@ -138,11 +147,11 @@ jobs:
       - name: Install SRPM and build dependencies
         run: |
           rpm -i srpms/*.src.rpm
-          dnf builddep -y ~/rpmbuild/SPECS/qemu-kvm.spec
+          dnf builddep -y ~/rpmbuild/SPECS/libvirt.spec
 
       - name: Build RPMs
         run: |
-          rpmbuild -bb ~/rpmbuild/SPECS/qemu-kvm.spec \
+          rpmbuild -bb ~/rpmbuild/SPECS/libvirt.spec \
             --define "_rpmdir $PWD/rpms"
 
       - name: Upload build logs on failure
@@ -150,7 +159,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-logs-${{ matrix.arch }}
-          path: ~/rpmbuild/BUILD/qemu-*/qemu_kvm_build/meson-logs/
+          path: ~/rpmbuild/BUILD/libvirt-*/build/meson-logs/
 
       - name: Upload RPMs
         uses: actions/upload-artifact@v4

@@ -1,4 +1,5 @@
 # -*- rpm-spec -*-
+%global commit unknown
 
 # This spec file assumes you are building on a Fedora or RHEL version
 # that's still supported by the vendor. It may work on other distros
