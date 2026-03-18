@@ -154,7 +154,21 @@ jobs:
       - name: Install SRPM and build dependencies
         run: |
           rpm -i srpms/*.src.rpm
-          dnf builddep -y ~/rpmbuild/SPECS/libvirt.spec
+
+          SPEC=~/rpmbuild/SPECS/libvirt.spec
+          QEMU_VER=$(grep -m1 '^%global qemu_version' "$SPEC" | awk '{print $3}' || true)
+
+          if [ -n "$QEMU_VER" ] && [[ "$QEMU_VER" != *:* ]]; then
+            EPOCH=$(dnf repoquery -q --qf '%{epoch}' "qemu-img" \
+              --archlist="$(uname -m),noarch" 2>/dev/null \
+              | grep -v '^0$' | head -1 || true)
+            if [ -n "$EPOCH" ]; then
+              echo "==> Prepending epoch ${EPOCH} to qemu_version"
+              sed -i "s/^%global qemu_version .*/%global qemu_version ${EPOCH}:${QEMU_VER}/" "$SPEC"
+            fi
+          fi
+
+          dnf builddep -y "$SPEC"
 
       - name: Build RPMs
         run: |
