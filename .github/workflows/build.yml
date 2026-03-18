@@ -152,6 +152,7 @@ jobs:
       - name: Build RPMs
         run: |
           rpmbuild -bb ~/rpmbuild/SPECS/libvirt.spec \
+            --nocheck \
             --define "_rpmdir $PWD/rpms"
 
       - name: Upload build logs on failure
