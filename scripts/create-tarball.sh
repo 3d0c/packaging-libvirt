@@ -19,6 +19,9 @@ git clone --filter=blob:none "$UPSTREAM_REPO" "$WORKDIR/src"
 pushd "$WORKDIR/src" > /dev/null
 echo "==> Checking out ${COMMIT}..."
 git checkout "$COMMIT"
+echo "==> Initializing submodules..."
+git submodule update --init --recursive --depth=1
+
 echo "==> Downloading meson subprojects..."
 meson subprojects download || true
 
