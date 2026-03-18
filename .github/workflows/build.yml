@@ -25,7 +25,7 @@ jobs:
     steps:
       - name: Install prerequisites
         run: |
-          dnf install -y git rpm-build rpmdevtools xz findutils
+          dnf install -y git rpm-build rpmdevtools xz findutils meson
 
       - name: Checkout packaging repo
         uses: actions/checkout@v4
@@ -124,9 +124,6 @@ jobs:
     steps:
       - name: Enable repos and install prerequisites
         run: |
-          dnf install -y dnf-plugins-core epel-release
-          dnf config-manager --set-enabled crb
-
           cat > /etc/yum.repos.d/qemu-nvidia.repo <<'REPO'
           [qemu-nvidia]
           name=QEMU NVIDIA Repo
@@ -136,6 +133,8 @@ jobs:
           REPO
           sed -i 's/^[[:space:]]*//' /etc/yum.repos.d/qemu-nvidia.repo
 
+          dnf install -y dnf-plugins-core epel-release
+          dnf config-manager --set-enabled crb
           dnf install -y rpm-build
 
       - name: Download SRPM
