@@ -2070,7 +2070,7 @@ exit 0
 %files
 
 %files docs
-%doc AUTHORS.rst NEWS.rst README.rst
+%doc NEWS.rst README.rst
 %doc libvirt-docs/*
 
 %files daemon
