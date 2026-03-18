@@ -1,5 +1,5 @@
 # -*- rpm-spec -*-
-%global commit unknown
+%global commit c25f9d0240e5b39fec7b376a2854b02edb6772c5
 
 # This spec file assumes you are building on a Fedora or RHEL version
 # that's still supported by the vendor. It may work on other distros
@@ -290,7 +290,7 @@
 Summary: Library providing a simple virtualization API
 Name: libvirt
 Version: 11.9.0
-Release: 2%{?dist}%{?extra_release}
+Release: 3%{?dist}%{?extra_release}
 License: GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND OFL-1.1
 URL: https://libvirt.org/
 
