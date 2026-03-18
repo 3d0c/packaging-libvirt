@@ -1,5 +1,6 @@
 # -*- rpm-spec -*-
 %global commit c25f9d0240e5b39fec7b376a2854b02edb6772c5
+# global qemu_version
 
 # This spec file assumes you are building on a Fedora or RHEL version
 # that's still supported by the vendor. It may work on other distros
@@ -377,7 +378,11 @@ BuildRequires: cyrus-sasl-devel
 # For managing ACLs
 BuildRequires: libacl-devel
 # From QEMU RPMs, used by virstoragetest
+%if 0%{?qemu_version:1}
+BuildRequires: qemu-img = %{qemu_version}
+%else
 BuildRequires: /usr/bin/qemu-img
+%endif
     %endif
 # nbdkit support requires libnbd
     %if %{with_nbdkit}

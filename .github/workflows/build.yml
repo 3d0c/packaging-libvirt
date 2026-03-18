@@ -49,6 +49,13 @@ jobs:
               SHA="${BASH_REMATCH[1]}"
               echo "commit_sha=${SHA}" >> "$GITHUB_OUTPUT"
               echo "Build request for upstream commit: ${SHA}"
+
+              if [[ "$MSG" =~ qemu:[[:space:]]*([^[:space:],]+) ]]; then
+                QEMU_VER="${BASH_REMATCH[1]}"
+                echo "qemu_version=${QEMU_VER}" >> "$GITHUB_OUTPUT"
+                echo "Pinning QEMU version: ${QEMU_VER}"
+              fi
+
               exit 0
             fi
           done
@@ -66,7 +73,7 @@ jobs:
         if: steps.parse.outputs.skip != 'true'
         run: |
           chmod +x scripts/update-spec.sh
-          scripts/update-spec.sh "${{ steps.parse.outputs.commit_sha }}"
+          scripts/update-spec.sh "${{ steps.parse.outputs.commit_sha }}" "${{ steps.parse.outputs.qemu_version }}"
 
       - name: Build SRPM
         if: steps.parse.outputs.skip != 'true'
